@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:rim="http://www.blackberry.com/ns/widgets"
+    xmlns:android="http://schemas.android.com/apk/res/android" id="cordova-plugin-shortcuts" version="1.0.1">
+
+    <name>Shortcuts</name>
+    <description>Long press the desktop icon for the menu.</description>
+    <license>MIT</license>
+    <keywords>cordova,shortcuts,3dtouch</keywords>
+    <repo>https://github.com/wtto00/cordova-plugin-shortcuts.git</repo>
+    <issue>https://github.com/wtto00/cordova-plugin-shortcuts/issues</issue>
+
+    <!-- js module-->
+    <js-module src="www/shortcuts.js" name="Shortcuts">
+        <clobbers target="Shortcuts" />
+    </js-module>
+
+    <!-- ios -->
+    <platform name="ios">
+        <hook type="before_prepare" src="scripts/ios/before-prepare.js" />
+        <hook type="before_plugin_uninstall" src="scripts/ios/before-plugin-uninstall.js" />
+
+        <config-file parent="/*" target="config.xml">
+            <feature name="ThreeDeeTouch">
+                <param name="ios-package" value="ThreeDeeTouch" />
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/ThreeDeeTouch.h" />
+        <source-file src="src/ios/ThreeDeeTouch.m" />
+        <header-file src="src/ios/AppDelegate+threedeetouch.h" />
+        <source-file src="src/ios/AppDelegate+threedeetouch.m" />
+    </platform>
+
+    <!-- android -->
+    <platform name="android">
+        <hook type="before_prepare" src="scripts/android/before-prepare.js" />
+        <hook type="after_plugin_install" src="scripts/android/after-plugin-install.js" />
+        <hook type="before_plugin_uninstall" src="scripts/android/before-plugin-uninstall.js" />
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <activity android:name=".ShortcutHelperActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            <activity-alias android:exported="true" android:name="${applicationId}.ShortcutHelperActivity" android:targetActivity=".ShortcutHelperActivity" />
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application/activity[@android:name='MainActivity']">
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
+        </config-file>
+
+        <source-file src="src/android/ShortcutsPlugin.java" target-dir="src/wang/tato/shortcuts" />
+
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="ShortcutsPlugin">
+                <param name="android-package" value="wang.tato.shortcuts.ShortcutsPlugin" />
+            </feature>
+        </config-file>
+    </platform>
+</plugin>

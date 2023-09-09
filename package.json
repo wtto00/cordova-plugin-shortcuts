@@ -1,0 +1,49 @@
+{
+  "name": "cordova-plugin-shortcuts",
+  "version": "1.0.1",
+  "description": "Long press the desktop icon for the menu.",
+  "types": "./types/index.d.ts",
+  "files": [
+    "src",
+    "types",
+    "www",
+    "scripts",
+    "plugin.xml"
+  ],
+  "cordova": {
+    "id": "cordova-plugin-shortcuts",
+    "platforms": [
+      "ios",
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wtto00/cordova-plugin-shortcuts.git"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova",
+    "shortcuts",
+    "3dtouch",
+    "cordova-ios",
+    "cordova-android"
+  ],
+  "engines": {
+    "cordovaDependencies": {
+      "1.0.0": {
+        "cordova-android": ">=11.0.0",
+        "cordova-ios": ">=6.0.0"
+      }
+    }
+  },
+  "author": "wtto00 <wtto00@outlook.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wtto00/cordova-plugin-shortcuts/issues"
+  },
+  "homepage": "https://github.com/wtto00/cordova-plugin-shortcuts#readme",
+  "dependencies": {
+    "plist": "^3.1.0"
+  }
+}
