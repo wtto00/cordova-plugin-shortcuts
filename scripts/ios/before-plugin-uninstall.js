@@ -38,28 +38,17 @@ module.exports = function (context) {
   const assetsPath = path.resolve(projectRoot, `platforms/ios/${appName}/Assets.xcassets`);
   if (!fs.existsSync(assetsPath)) return;
 
-  const iconPath = path.resolve(projectRoot, "./resources/shortcuts/icons");
-  if (fs.existsSync(iconPath)) {
-    const icons = fs.readdirSync(iconPath);
-    const includedName = [];
-    const validExts = ["svg", "png"];
-
-    icons.forEach((file) => {
-      const index = file.lastIndexOf(".");
-      const name = file.substring(0, index);
-      const ext = file.substring(index + 1);
-
-      if (validExts.includes(ext) && !includedName.includes(name)) {
-        if (ext === "svg" || (ext === "png" && !icons.includes(`${name}.svg`))) {
-          // svg first
-          const iconDir = path.resolve(assetsPath, `${camel2pascal(name)}.imageset`);
-          if (fs.existsSync(iconDir)) {
-            fs.rmSync(iconDir, { recursive: true });
-          }
-        }
-      }
-    });
+  const jsonConfigPath = path.resolve(projectRoot, "./resources/shortcuts/shortcuts.json");
+  let jsonConfig = { ios: [] };
+  if (fs.existsSync(jsonConfigPath)) {
+    jsonConfig = require(jsonConfigPath);
   }
+  (jsonConfig.ios || []).forEach((item) => {
+    if (!item.icon) return;
+    const iconDir = path.resolve(assetsPath, `${camel2pascal(item.icon)}.imageset`);
+    if (!fs.existsSync(iconDir)) return;
+    fs.rmSync(iconDir, { recursive: true });
+  });
   /* --------------------------------- remove icon files End --------------------------------- */
 };
 

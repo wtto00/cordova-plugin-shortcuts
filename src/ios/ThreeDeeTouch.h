@@ -12,6 +12,8 @@
 
 - (void) createDynamicShortcut:(CDVInvokedUrlCommand*)command;
 - (void) removeAllDynamicShortcuts:(CDVInvokedUrlCommand*)command;
+- (void) getDynamicShortcuts:(CDVInvokedUrlCommand*)command;
+- (void) setDynamicShortcuts:(CDVInvokedUrlCommand*)command;
 
 - (void) enableLinkPreview:(CDVInvokedUrlCommand*)command;
 - (void) disableLinkPreview:(CDVInvokedUrlCommand*)command;
@@ -20,7 +22,7 @@
 
 @class ForceTouchRecognizer;
 @interface ForceTouchRecognizer : UIGestureRecognizer {
-  ForceTouchRecognizer * ForceTouchRecognizer;
+    ForceTouchRecognizer * ForceTouchRecognizer;
 }
 @property NSString* callbackId;
 @property id<CDVCommandDelegate> commandDelegate;

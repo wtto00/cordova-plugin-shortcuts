@@ -25,96 +25,98 @@ module.exports = function (context) {
   const xmlHelpers = context.requireCordovaModule("cordova-common").xmlHelpers;
   /* --------------------------------- xmlHelper End --------------------------------- */
 
-  /* --------------------------------- copy icon files Start --------------------------------- */
-  const iconPath = path.resolve(projectRoot, "./resources/shortcuts/icons");
-  if (fs.existsSync(iconPath)) {
-    const resPath = path.resolve(projectRoot, "./platforms/android/app/src/main/res/drawable");
-
-    const icons = fs.readdirSync(iconPath);
-    const includedName = [];
-    const validExts = ["xml", "png"];
-    icons.forEach((file) => {
-      const index = file.lastIndexOf(".");
-      const name = file.substring(0, index);
-      const ext = file.substring(index + 1);
-      if (validExts.includes(ext) && !includedName.includes(name)) {
-        if (ext === "xml" || (ext === "png" && !icons.includes(`${name}.xml`))) {
-          // xml first
-          fs.cpSync(path.resolve(iconPath, file), path.resolve(resPath, file));
-        }
-      }
-    });
-  }
-  /* --------------------------------- copy icon files End --------------------------------- */
-
   const jsonConfigPath = path.resolve(projectRoot, "./resources/shortcuts/shortcuts.json");
-  if (fs.existsSync(jsonConfigPath)) {
-    const jsonConfig = require(jsonConfigPath);
-    if (Array.isArray(jsonConfig.android) && jsonConfig.android.length > 0) {
-      // str append res/values/string.xml
-      let str = "";
-      const stringPath = path.resolve(projectRoot, "./platforms/android/app/src/main/res/values/strings.xml");
-      let originStringXml = {};
-      let strList = [];
-      const strExist = fs.existsSync(stringPath);
-      if (!strExist) {
-        str += `<?xml version='1.0' encoding='utf-8'?>\n<resources>\n`;
-      } else {
-        originStringXml = xmlHelpers.parseElementtreeSync(stringPath);
-        strList = originStringXml.findall("string") || [];
-      }
+  let jsonConfig = { android: [] };
+  if (!fs.existsSync(jsonConfigPath)) {
+    console.warn("There is no config file: resources/shortcuts/shortcuts.json.");
+  } else {
+    jsonConfig = require(jsonConfigPath);
+  }
+  /* --------------------------------- shortcuts.xml & strings.xml Start --------------------------------- */
+  // str append res/values/string.xml
+  let str = "";
+  const stringPath = path.resolve(projectRoot, "./platforms/android/app/src/main/res/values/strings.xml");
+  let originStringXml = {};
+  let strList = [];
+  const strExist = fs.existsSync(stringPath);
+  if (!strExist) {
+    str += `<?xml version='1.0' encoding='utf-8'?>\n<resources>\n`;
+  } else {
+    originStringXml = xmlHelpers.parseElementtreeSync(stringPath);
+    strList = originStringXml.findall("string") || [];
+  }
 
-      let xml = '<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">\n';
+  let xml = '<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">\n';
 
-      jsonConfig.android.forEach((item, index) => {
-        /* --------------------------------- string.xml Start --------------------------------- */
-        const shortcutShortLabel = `shortcutShortLabel_${index + 1}`;
-        const sslIndex = strList.findIndex((sn) => sn.attrib.name === shortcutShortLabel);
-        if (sslIndex > -1) {
-          originStringXml._root._children[sslIndex].text = item.shortcutShortLabel;
-        } else {
-          str += `\t<string name="${shortcutShortLabel}">${item.shortcutShortLabel}</string>\n`;
-        }
-        const shortcutLongLabel = `shortcutLongLabel_${index + 1}`;
-        const sllIndex = strList.findIndex((sn) => sn.attrib.name === shortcutLongLabel);
-        if (sllIndex > -1) {
-          originStringXml._root._children[sllIndex].text = item.shortcutLongLabel;
-        } else {
-          str += `\t<string name="${shortcutLongLabel}">${item.shortcutLongLabel}</string>\n`;
-        }
-        const shortcutDisabledLabel = `shortcutDisabledLabel_${index + 1}`;
-        const sdlIndex = strList.findIndex((sn) => sn.attrib.name === shortcutDisabledLabel);
-        if (sdlIndex > -1) {
-          originStringXml._root._children[sdlIndex].text = item.shortcutDisabledLabel;
-        } else {
-          str += `\t<string name="${shortcutDisabledLabel}">${item.shortcutDisabledLabel}</string>\n`;
-        }
-        /* --------------------------------- string.xml End --------------------------------- */
+  (jsonConfig.android || []).forEach((item, index) => {
+    /* --------------------------------- string.xml Start --------------------------------- */
+    const shortLabel = `shortcutShortLabel_${index + 1}`;
+    const sslIndex = strList.findIndex((sn) => sn.attrib.name === shortLabel);
+    if (sslIndex > -1) {
+      originStringXml._root._children[sslIndex].text = item.shortcutShortLabel || "";
+    } else {
+      str += `\t<string name="${shortLabel}">${item.shortcutShortLabel || ""}</string>\n`;
+    }
+    const longLabel = `shortcutLongLabel_${index + 1}`;
+    const sllIndex = strList.findIndex((sn) => sn.attrib.name === longLabel);
+    if (sllIndex > -1) {
+      originStringXml._root._children[sllIndex].text = item.shortcutLongLabel || item.shortcutShortLabel || "";
+    } else {
+      str += `\t<string name="${longLabel}">${item.shortcutLongLabel || item.shortcutShortLabel || ""}</string>\n`;
+    }
+    const disabledLabel = `shortcutDisabledLabel_${index + 1}`;
+    const sdlIndex = strList.findIndex((sn) => sn.attrib.name === disabledLabel);
+    if (sdlIndex > -1) {
+      originStringXml._root._children[sdlIndex].text = item.shortcutDisabledLabel || "";
+    } else {
+      str += `\t<string name="${disabledLabel}">${item.shortcutDisabledLabel || ""}</string>\n`;
+    }
+    /* --------------------------------- string.xml End --------------------------------- */
 
-        xml += `\t<shortcut
+    xml += `\t<shortcut
           android:shortcutId="${item.shortcutId}"
           android:enabled="true"
           android:icon="@drawable/${item.icon}"
-          android:shortcutShortLabel="@string/shortcutShortLabel_${index + 1}"
-          android:shortcutLongLabel="@string/shortcutLongLabel_${index + 1}"
-          android:shortcutDisabledMessage="@string/shortcutDisabledLabel_${index + 1}">
+          android:shortcutShortLabel="@string/${shortLabel}"
+          android:shortcutLongLabel="@string/${longLabel}"
+          android:shortcutDisabledMessage="@string/${disabledLabel}">
           <intent
             android:action="${item.action}"
             android:targetPackage="${packageName}"
             android:targetClass="${packageName}.ShortcutHelperActivity" />
         </shortcut>\n`;
-      });
+  });
 
-      xml += "</shortcuts>\n";
-      const xmlPath = path.resolve(projectRoot, "./platforms/android/app/src/main/res/xml/shortcuts.xml");
-      fs.writeFileSync(xmlPath, xml, { encoding: "utf8" });
+  xml += "</shortcuts>\n";
+  const xmlPath = path.resolve(projectRoot, "./platforms/android/app/src/main/res/xml/shortcuts.xml");
+  fs.writeFileSync(xmlPath, xml, { encoding: "utf8" });
 
-      if (!strExist) {
-        str += "</resources>";
-      } else {
-        str = originStringXml.write().replace("</resources>", `${str}</resources>`);
-      }
-      fs.writeFileSync(stringPath, str);
-    }
+  if (!strExist) {
+    str += "</resources>";
+  } else {
+    str = originStringXml.write().replace("</resources>", `${str}</resources>`);
   }
+  fs.writeFileSync(stringPath, str);
+  /* --------------------------------- shortcuts.xml & strings.xml End --------------------------------- */
+
+  /* --------------------------------- copy icon files Start --------------------------------- */
+  const iconDir = path.resolve(projectRoot, "./resources/shortcuts/icons");
+  const resPath = path.resolve(projectRoot, "./platforms/android/app/src/main/res/drawable");
+  if (fs.existsSync(iconDir)) {
+    (jsonConfig.android || []).forEach((item) => {
+      if (!item.icon) return;
+      let iconPath = path.resolve(iconDir, `${item.icon}.xml`);
+      if (fs.existsSync(iconPath)) {
+        fs.cpSync(iconPath, path.resolve(resPath, `${item.icon}.xml`));
+      } else {
+        iconPath = path.resolve(iconDir, `${item.icon}.png`);
+        if (fs.existsSync(iconPath)) {
+          fs.cpSync(iconPath, path.resolve(resPath, `${item.icon}.png`));
+        } else {
+          console.warn(`There is no ${item.icon} icon in resources/shortcuts/icons.`);
+        }
+      }
+    });
+  }
+  /* --------------------------------- copy icon files End --------------------------------- */
 };

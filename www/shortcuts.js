@@ -1,10 +1,18 @@
 const Shortcuts = {
-  createDynamicShortcut: function (params, successCallback, errorCallback) {
-    cordova.exec(successCallback, errorCallback, "ShortcutsPlugin", "createDynamicShortcut", [params]);
+  createDynamicShortcut: function (params, onSuccess, onError) {
+    cordova.exec(onSuccess, onError, "ShortcutsPlugin", "createDynamicShortcut", [params]);
   },
 
-  removeAllDynamicShortcuts: function (successCallback, errorCallback) {
-    cordova.exec(successCallback, errorCallback, "ShortcutsPlugin", "removeAllDynamicShortcuts", []);
+  removeAllDynamicShortcuts: function (onSuccess, onError) {
+    cordova.exec(onSuccess, onError, "ShortcutsPlugin", "removeAllDynamicShortcuts", []);
+  },
+
+  getDynamicShortcuts: function (onSuccess, onError) {
+    cordova.exec(onSuccess, onError, "ShortcutsPlugin", "getDynamicShortcuts", []);
+  },
+
+  setDynamicShortcuts: function (params, onSuccess, onError) {
+    cordova.exec(onSuccess, onError, "ShortcutsPlugin", "setDynamicShortcuts", [params]);
   },
 
   isAvailable: (onSuccess) => {

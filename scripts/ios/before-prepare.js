@@ -1,8 +1,8 @@
 #!/usr/bin/env node
+const path = require("path");
+const fs = require("fs");
 
 module.exports = function (context) {
-  const path = require("path");
-  const fs = require("fs");
   const { projectRoot, plugin } = context.opts;
 
   if (plugin.id !== "cordova-plugin-shortcuts") {
@@ -65,44 +65,17 @@ module.exports = function (context) {
   if (!fs.existsSync(assetsPath)) {
     fs.mkdirSync(assetsPath);
   }
-  const rootContents = { info: { author: "xcode", version: 1 } };
   const rootContentsPath = path.resolve(assetsPath, "Contents.json");
   if (!fs.existsSync(rootContentsPath)) {
+    const rootContents = { info: { author: "xcode", version: 1 } };
     fs.writeFileSync(rootContentsPath, JSON.stringify(rootContents), { encoding: "utf8" });
   }
 
-  const iconPath = path.resolve(projectRoot, "./resources/shortcuts/icons");
-  if (fs.existsSync(iconPath)) {
-    const icons = fs.readdirSync(iconPath);
-    const includedName = [];
-    const validExts = ["svg", "png"];
-
-    icons.forEach((file) => {
-      const index = file.lastIndexOf(".");
-      const name = file.substring(0, index);
-      const ext = file.substring(index + 1);
-
-      if (validExts.includes(ext) && !includedName.includes(name)) {
-        if (ext === "svg" || (ext === "png" && !icons.includes(`${name}.svg`))) {
-          // svg first
-          const iconContents = {
-            images: [
-              { filename: file, idiom: "universal", scale: "1x" },
-              { idiom: "universal", scale: "2x" },
-              { idiom: "universal", scale: "3x" },
-            ],
-            info: { author: "xcode", version: 1 },
-          };
-          const iconDir = path.resolve(assetsPath, `${camel2pascal(name)}.imageset`);
-          if (!fs.existsSync(iconDir)) fs.mkdirSync(iconDir);
-          fs.writeFileSync(path.resolve(iconDir, "Contents.json"), JSON.stringify(iconContents), {
-            encoding: "utf8",
-          });
-          fs.cpSync(path.resolve(iconPath, file), path.resolve(iconDir, file));
-        }
-      }
-    });
-  }
+  const iconDir = path.resolve(projectRoot, "./resources/shortcuts/icons");
+  (jsonConfig.ios || []).forEach((item) => {
+    if (!item.icon) return;
+    copyIcon(item.icon, iconDir, assetsPath);
+  });
   /* --------------------------------- copy icon files End --------------------------------- */
 };
 
@@ -110,4 +83,24 @@ function camel2pascal(name) {
   return name.replace(/(?:^|[\s_-])(\w)/g, function (_, c) {
     return c.toUpperCase();
   });
+}
+
+function copyIcon(icon, originPath, assetsPath) {
+  let file = `${icon}.svg`;
+  if (!fs.existsSync(path.resolve(originPath, file))) file = `${icon}.png`;
+  if (!fs.existsSync(path.resolve(originPath, file))) return;
+  const iconContents = {
+    images: [
+      { filename: file, idiom: "universal", scale: "1x" },
+      { idiom: "universal", scale: "2x" },
+      { idiom: "universal", scale: "3x" },
+    ],
+    info: { author: "xcode", version: 1 },
+  };
+  const iconDir = path.resolve(assetsPath, `${camel2pascal(icon)}.imageset`);
+  if (!fs.existsSync(iconDir)) fs.mkdirSync(iconDir);
+  fs.writeFileSync(path.resolve(iconDir, "Contents.json"), JSON.stringify(iconContents), {
+    encoding: "utf8",
+  });
+  fs.cpSync(path.resolve(originPath, file), path.resolve(iconDir, file));
 }

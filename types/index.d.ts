@@ -7,9 +7,9 @@ declare namespace CordovaPluginShortcuts {
     /** Click operation symbol. */
     action: string;
     /** This is the shortcut shown when user long press over the icon when it is located in the home screen. */
-    shortLabel: string;
+    shortLabel?: string;
     /** This is the shortcut shown when user long press over the icon when it is located in the app drawer. */
-    longLabel: string;
+    longLabel?: string;
     /**
      * Android: should be the base64 icon or the name of this without extension.
      * iOS: custom icon, It must be a valid name of an icon template in your Assets catalog.
@@ -63,7 +63,29 @@ declare namespace CordovaPluginShortcuts {
    * @param onSuccess success callback
    * @param onError fail callback
    */
-  function removeAllDynamicShortcuts(onSuccess?: () => void, onError?: () => void): void;
+  function removeAllDynamicShortcuts(onSuccess?: () => void, onError?: (err: string) => void): void;
+
+  interface DynamicShortcuts {
+    id: string;
+    action: string;
+    shortLabel?: string;
+    longLabel?: string;
+    disabledMessage?: string;
+  }
+  /**
+   * Get dynamic shortcuts.
+   * @param onSuccess success callback
+   * @param onError fail callback
+   */
+  function getDynamicShortcuts(onSuccess: (data: DynamicShortcuts[]) => void, onError?: (err: string) => void): void;
+
+  /**
+   * Set up dynamic shortcuts.
+   * @param shortcuts the dynamic shortcut to be set.
+   * @param onSuccess success callback
+   * @param onError fail callback
+   */
+  function setDynamicShortcuts(shortcuts: Shortcut[], onSuccess: () => void, onError?: (err: string) => void): void;
 
   interface HomeIconPressedItem {
     /** Click operation symbol. */

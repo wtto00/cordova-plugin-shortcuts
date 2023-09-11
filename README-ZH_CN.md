@@ -9,8 +9,10 @@
 
 引用借鉴:
 
-- Android: [kunder-lab/cordova-plugin-kunder-android-shortcuts](https://github.com//kunder-lab/cordova-plugin-kunder-android-shortcuts)
+- 安卓: [kunder-lab/cordova-plugin-kunder-android-shortcuts](https://github.com//kunder-lab/cordova-plugin-kunder-android-shortcuts)
 - iOS: [EddyVerbruggen/cordova-plugin-3dtouch](https://github.com/EddyVerbruggen/cordova-plugin-3dtouch)
+- [安卓官方文档](https://developer.android.com/develop/ui/views/launch/shortcuts)
+- [iOS 官方文档](https://developer.apple.com/documentation/uikit/menus_and_shortcuts/add_home_screen_quick_actions)
 
 ## 支持的平台
 
@@ -62,7 +64,7 @@ resources
     },
     {
       "shortcutId": "ID_2",
-      "icon": "icon_2", // One of the icon names in android-shortcuts/icons without file extension.
+      "icon": "icon_2",
       "shortcutShortLabel": "Short Label 2",
       "shortcutLongLabel": "Long Label 2",
       "shortcutDisabledLabel": "Disabled message 2",
@@ -86,19 +88,54 @@ resources
 }
 ```
 
-| 字段                  | 支持的平台            | 说明                              |
-| --------------------- | --------------------- | --------------------------------- |
-| shortcutId            | ✅ Android            | 快捷方式唯一 ID                   |
-| icon                  | ✅ Android<br/>✅ iOS | 自定义图标                        |
-| iconType              | ✅ iOS                | Apple 官方提供的图标<sup>\*</sup> |
-| shortcutShortLabel    | ✅ Android<br/>✅ iOS | 快捷方式标题                      |
-| shortcutLongLabel     | ✅ Android<br/>✅ iOS | 快捷方式副标题                    |
-| shortcutDisabledLabel | ✅ Android            | 快捷方式被禁用时的显示文本        |
-| action                | ✅ Android<br/>✅ iOS | 点击触发的操作标志                |
+| 字段                  | 支持的平台            | 说明                                                |
+| --------------------- | --------------------- | --------------------------------------------------- |
+| shortcutId            | ✅ Android            | 快捷方式唯一 ID                                     |
+| icon                  | ✅ Android<br/>✅ iOS | `shortcuts/icons`文件夹中的图片文件名称，不包含后缀 |
+| iconType              | ✅ iOS                | Apple 官方提供的图标<sup>\*</sup>                   |
+| shortcutShortLabel    | ✅ Android<br/>✅ iOS | 快捷方式标题                                        |
+| shortcutLongLabel     | ✅ Android<br/>✅ iOS | 快捷方式副标题                                      |
+| shortcutDisabledLabel | ✅ Android            | 快捷方式被禁用时的显示文本                          |
+| action                | ✅ Android<br/>✅ iOS | 点击触发的操作标志                                  |
 
 > \*: iOS 9.0 支持的 Apple 官方图标: Compose, Play, Pause, Add, Location, Search, Share  
 > \*: iOS 9.1 增加了这些: Prohibit, Contact, Home, MarkLocation, Favorite, Love, Cloud, Invitation, Confirmation, Mail, Message, Date, Time, CapturePhoto, CaptureVideo, Task, TaskCompleted, Alarm, Bookmark, Shuffle, Audio, Update  
 > \*: 更多查看: <https://developer.apple.com/design/human-interface-guidelines/icons>
+
+安卓平台中静态快捷方式，即使 APP 在后台运行，点击启动时候全都是重新打开，重新初始化，需要经过启动屏，所以耗时长，比较慢。  
+iOS 下的静态快捷方式没有问题。所以你可以使用 `device.platform==='Android'` 来判断。  
+如果需要在安卓平台下在 APP 后台运行时，快速打开，可以使用动态快捷方式，动态快捷方式在 APP 后台运行的时候打开 APP，触发的是 resume 事件，所以需要这样做
+
+```javascript
+function handleSelectShortcut() {
+  window.Shortcuts.initHomeIconPressed((res) => {
+    if (res?.action === "ACTION_1") {
+      // do something
+    } else if (res?.action === "ACTION_2") {
+      // do something
+    } else if (res?.action === "ACTION_3") {
+      // do something
+    }
+  });
+}
+
+document.addEventListener(
+  "deviceready",
+  () => {
+    // trigger when the APP is cold-started
+    handleSelectShortcut();
+    document.addEventListener(
+      "resume",
+      () => {
+        // trigger when the app is opened from the background
+        handleSelectShortcut();
+      },
+      false
+    );
+  },
+  false
+);
+```
 
 ### 获取点击的快捷方式
 
@@ -151,6 +188,7 @@ Shortcuts.createDynamicShortcut(
 | iconIsBase64       | ✅ Android            | 可选参数：布尔类型。 标志 icon 字段是否是 base 字符串。默认为 false |
 
 > \*: 在 iOS 平台上，可以使用自定义图标来提供自己的图标。它必须是 Assets 目录中图标模板的有效名称。
+> \*: 在安卓平台上, 如果 `iconIsBase64=false`, 设置的 icon 需要手动复制到 `platforms/android/app/src/main/res/drawable` 目录. 你可以在 `config.xml` 中这样做: `<resource-file src="resources/shortcuts/icons/icon_1.xml" target="res/drawable/icon_1.xml" />`.
 
 ### 移除快捷方式
 

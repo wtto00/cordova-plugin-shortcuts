@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-shortcuts",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "Long press the desktop icon for the menu.",
   "types": "./types/index.d.ts",
   "files": [

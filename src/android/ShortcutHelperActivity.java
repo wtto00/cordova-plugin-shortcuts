@@ -19,7 +19,7 @@ public class ShortcutHelperActivity extends Activity {
         Log.i(TAG, "******************************************");
         Log.i(TAG, ACTION);
         Log.i(TAG, "******************************************");
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         intent.setAction(ACTION);
         startActivity(intent);
         finish();

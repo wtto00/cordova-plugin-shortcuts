@@ -37,13 +37,18 @@ module.exports = function (context) {
   /* --------------------------------- delete shortcuts.xml End --------------------------------- */
 
   /* --------------------------------- delete icon files Start --------------------------------- */
-  const iconPath = path.resolve(projectRoot, "./resources/shortcuts/icons");
-  const files = fs.readdirSync(iconPath);
-  files.forEach((file) => {
-    const resPath = path.resolve(projectRoot, `./platforms/android/app/src/main/res/drawable/${file}`);
-    if (fs.existsSync(resPath)) {
-      fs.rmSync(resPath, { recursive: true });
-    }
+  const jsonConfigPath = path.resolve(projectRoot, "./resources/shortcuts/shortcuts.json");
+  let jsonConfig = { android: [] };
+  if (!fs.existsSync(jsonConfigPath)) {
+    jsonConfig = require(jsonConfigPath);
+  }
+  (jsonConfig.android || []).forEach((item) => {
+    if (!item.icon) return;
+    const iconPath = path.resolve(projectRoot, `./platforms/android/app/src/main/res/drawable/${item.icon}.xml`);
+    if (!fs.existsSync(iconPath))
+      iconPath = path.resolve(projectRoot, `./platforms/android/app/src/main/res/drawable/${item.icon}.png`);
+    if (!fs.existsSync(iconPath)) return;
+    fs.rmSync(iconPath, { recursive: true });
   });
   /* --------------------------------- delete icon files End --------------------------------- */
 
