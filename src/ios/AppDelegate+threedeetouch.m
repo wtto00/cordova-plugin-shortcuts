@@ -1,4 +1,4 @@
-#import "AppDelegate+threedeetouch.h"
+#import "AppDelegate+ThreeDeeTouch.h"
 #import "ThreeDeeTouch.h"
 #import <objc/runtime.h>
 
@@ -6,15 +6,15 @@
 
 - (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void(^)(BOOL succeeded))completionHandler {
 
-  NSString* jsFunction = @"ThreeDeeTouch.onHomeIconPressed";
-  NSString *params = [NSString stringWithFormat:@"{'type':'%@', 'title': '%@', 'subtitle': '%@'}", shortcutItem.type, shortcutItem.localizedTitle, shortcutItem.localizedSubtitle];
+  NSString* jsFunction = @"Shortcuts.onHomeIconPressed";
+  NSString *params = [NSString stringWithFormat:@"{'action':'%@', 'title': '%@', 'subtitle': '%@'}", shortcutItem.type, shortcutItem.localizedTitle, shortcutItem.localizedSubtitle];
   NSString* result = [NSString stringWithFormat:@"%@(%@)", jsFunction, params];
   [self callJavascriptFunctionWhenAvailable:result];
 }
 
 // check every x seconds for the phone  app to be ready, or stop from glance.didDeactivate
 - (void) callJavascriptFunctionWhenAvailable:(NSString*)function {
-  ThreeDeeTouch *threeDeeTouch = [self.viewController getCommandInstance:@"ThreeDeeTouch"];
+  ThreeDeeTouch *threeDeeTouch = [self.viewController getCommandInstance:@"ShortcutsPlugin"];
   if (threeDeeTouch.initDone) {
     if ([threeDeeTouch.webView respondsToSelector:@selector(stringByEvaluatingJavaScriptFromString:)]) {
       // UIWebView

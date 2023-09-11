@@ -22,7 +22,7 @@
         <hook type="before_plugin_uninstall" src="scripts/ios/before-plugin-uninstall.js" />
 
         <config-file parent="/*" target="config.xml">
-            <feature name="ThreeDeeTouch">
+            <feature name="ShortcutsPlugin">
                 <param name="ios-package" value="ThreeDeeTouch" />
                 <param name="onload" value="true" />
             </feature>
@@ -30,8 +30,8 @@
 
         <header-file src="src/ios/ThreeDeeTouch.h" />
         <source-file src="src/ios/ThreeDeeTouch.m" />
-        <header-file src="src/ios/AppDelegate+threedeetouch.h" />
-        <source-file src="src/ios/AppDelegate+threedeetouch.m" />
+        <header-file src="src/ios/AppDelegate+ThreeDeeTouch.h" />
+        <source-file src="src/ios/AppDelegate+ThreeDeeTouch.m" />
     </platform>
 
     <!-- android -->

@@ -10,7 +10,8 @@
 
 - (void) watchForceTouches:(CDVInvokedUrlCommand*)command;
 
-- (void) configureQuickActions:(CDVInvokedUrlCommand*)command;
+- (void) createDynamicShortcut:(CDVInvokedUrlCommand*)command;
+- (void) removeAllDynamicShortcuts:(CDVInvokedUrlCommand*)command;
 
 - (void) enableLinkPreview:(CDVInvokedUrlCommand*)command;
 - (void) disableLinkPreview:(CDVInvokedUrlCommand*)command;

@@ -50,7 +50,7 @@ module.exports = function (context) {
   const jsonConfigPath = path.resolve(projectRoot, "./resources/shortcuts/shortcuts.json");
   if (fs.existsSync(jsonConfigPath)) {
     const jsonConfig = require(jsonConfigPath);
-    if (Array.isArray(jsonConfig.shortcuts) && jsonConfig.shortcuts.length > 0) {
+    if (Array.isArray(jsonConfig.android) && jsonConfig.android.length > 0) {
       // str append res/values/string.xml
       let str = "";
       const stringPath = path.resolve(projectRoot, "./platforms/android/app/src/main/res/values/strings.xml");
@@ -66,7 +66,7 @@ module.exports = function (context) {
 
       let xml = '<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">\n';
 
-      jsonConfig.shortcuts.forEach((item, index) => {
+      jsonConfig.android.forEach((item, index) => {
         /* --------------------------------- string.xml Start --------------------------------- */
         const shortcutShortLabel = `shortcutShortLabel_${index + 1}`;
         const sslIndex = strList.findIndex((sn) => sn.attrib.name === shortcutShortLabel);

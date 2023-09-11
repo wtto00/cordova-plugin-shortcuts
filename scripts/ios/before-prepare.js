@@ -28,17 +28,24 @@ module.exports = function (context) {
     return;
   }
   const jsonConfig = require(jsonConfigPath);
-  if (!Array.isArray(jsonConfig.shortcuts) || jsonConfig.shortcuts.length == 0) {
+  if (!Array.isArray(jsonConfig.ios) || jsonConfig.ios.length == 0) {
     console.log("The configured shortcuts were not found in the resources/shortcuts/shortcuts.json file.");
     return;
   }
 
-  const shortcuts = jsonConfig.shortcuts.map((item) => ({
-    UIApplicationShortcutItemIconFile: camel2pascal(item.icon),
-    UIApplicationShortcutItemTitle: item.shortcutShortLabel,
-    UIApplicationShortcutItemSubtitle: item.shortcutLongLabel,
-    UIApplicationShortcutItemType: item.action,
-  }));
+  const shortcuts = jsonConfig.ios.map((item) => {
+    const shortcutItem = {
+      UIApplicationShortcutItemTitle: item.shortcutShortLabel,
+      UIApplicationShortcutItemSubtitle: item.shortcutLongLabel || "",
+      UIApplicationShortcutItemType: item.action,
+    };
+    if (item.iconType) {
+      shortcutItem.UIApplicationShortcutItemIconType = `UIApplicationShortcutIconType${item.iconType}`;
+    } else {
+      shortcutItem.UIApplicationShortcutItemIconFile = camel2pascal(item.icon);
+    }
+    return shortcutItem;
+  });
 
   const plistPath = path.resolve(projectRoot, `platforms/ios/${appName}/${appName}-Info.plist`);
   if (!fs.existsSync(plistPath)) {

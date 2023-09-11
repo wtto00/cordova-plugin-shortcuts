@@ -1,5 +1,12 @@
 # cordova-plugin-shortcuts
 
+If this helps you a lot, please buy me a coffee.
+
+<a href="https://www.buymeacoffee.com/wtto00" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;max-width: 217px !important;" ></a>
+<a href="https://afdian.net/a/wtto00" target="_blank"><img style="height: 60px !important;max-width: 217px !important;" src="https://pic1.afdiancdn.com/static/img/welcome/button-sponsorme.jpg" alt="sponsorme"></a >
+
+English | [中文简体](./README-ZH_CN.md)
+
 References:
 
 - Android: [kunder-lab/cordova-plugin-kunder-android-shortcuts](https://github.com//kunder-lab/cordova-plugin-kunder-android-shortcuts)
@@ -13,13 +20,201 @@ References:
 ## Install
 
 ```shell
-
+cordova plugin add https://github.com/wtto00/cordova-plugin-shortcuts.git
 ```
 
 ## Uninstall
 
 ```shell
-
+cordova plugin uninstall cordova-plugin-shortcuts
 ```
 
 ## Usage
+
+### Static shortcuts configuration
+
+```txt
+resources
+├─── shortcuts
+    └─── icons
+        └─── icon_1.png //Use words, numbers and "_" characters only.
+        └─── icon_2.png //Use words, numbers and "_" characters only.
+        ...
+        └─── icon_N.png
+    └─── shortcuts.json
+```
+
+- Android platform supports `XML` and `PNG`, and if there are images with the same name, `XML` files are given priority.
+- IOS platform supports `SVG` and `PNG`, and if there are images with the same name, `SVG` files are given priority.
+
+In the shortcuts.json file you should set all the information about the shortcuts you want to create (maximum 4 shortcuts. If you define more than 4, these will be ignored):
+
+```json
+{
+  "android": [
+    {
+      "shortcutId": "ID_1",
+      "icon": "icon_1",
+      "shortcutShortLabel": "Short Label 1",
+      "shortcutLongLabel": "Long Label 1",
+      "shortcutDisabledLabel": "Disabled message 1",
+      "action": "ACTION_1"
+    },
+    {
+      "shortcutId": "ID_2",
+      "icon": "icon_2", // One of the icon names in android-shortcuts/icons without file extension.
+      "shortcutShortLabel": "Short Label 2",
+      "shortcutLongLabel": "Long Label 2",
+      "shortcutDisabledLabel": "Disabled message 2",
+      "action": "ACTION_2"
+    }
+  ],
+  "ios": [
+    {
+      "icon": "icon_1",
+      "shortcutShortLabel": "Short Label 2",
+      "shortcutLongLabel": "Long Label 2",
+      "action": "ACTION_1"
+    },
+    {
+      "iconType": "Compose",
+      "shortcutShortLabel": "Short Label 2",
+      "shortcutLongLabel": "Long Label 2",
+      "action": "ACTION_2"
+    }
+  ]
+}
+```
+
+| Field                 | Platform              | Note                                                  |
+| --------------------- | --------------------- | ----------------------------------------------------- |
+| shortcutId            | ✅ Android            | Unique ID for a shortcut.                             |
+| icon                  | ✅ Android<br/>✅ iOS | Custom Icons.                                         |
+| iconType              | ✅ iOS                | icons which have been provided by Apple.<sup>\*</sup> |
+| shortcutShortLabel    | ✅ Android<br/>✅ iOS | Title for a shortcut.                                 |
+| shortcutLongLabel     | ✅ Android<br/>✅ iOS | Subtitle for a shortcut.                              |
+| shortcutDisabledLabel | ✅ Android            | Text information displayed when shortcut is disabled. |
+| action                | ✅ Android<br/>✅ iOS | Click operation symbol.                               |
+
+> \*: iOS 9.0: Compose, Play, Pause, Add, Location, Search, Share  
+> \*: iOS 9.1 added these: Prohibit, Contact, Home, MarkLocation, Favorite, Love, Cloud, Invitation, Confirmation, Mail, Message, Date, Time, CapturePhoto, CaptureVideo, Task, TaskCompleted, Alarm, Bookmark, Shuffle, Audio, Update  
+> \*: More: <https://developer.apple.com/design/human-interface-guidelines/icons>
+
+### Get Selected Shortcut
+
+```javascript
+document.addEventListener(
+  "deviceready",
+  () => {
+    Shortcuts.initHomeIconPressed((payload) => {
+      console.log("Icon pressed. Action: " + payload.action + ". Title: " + payload.title + ".");
+      if (payload.action == "ACTION_1") {
+        // Do something
+      } else if (payload.action == "ACTION_2") {
+        // Do something
+      } else {
+        console.log(JSON.stringify(payload));
+      }
+    });
+  },
+  false
+);
+```
+
+> `payload.title` is `undefined` on android platform.
+
+### Create a dynamic shortcut
+
+```javascript
+Shortcuts.createDynamicShortcut(
+  {
+    id: "someID",
+    action: "someAction",
+    shortLabel: "ShortLabel",
+    longLabel: "LongLabel",
+    icon: "BASE64_String_icon",
+    iconIsBase64: "true",
+  },
+  successCallback,
+  errorCallback
+);
+```
+
+| Field              | Platform              | Note                                                                                           |
+| ------------------ | --------------------- | ---------------------------------------------------------------------------------------------- |
+| id                 | ✅ Android            | Unique ID for a shortcut.                                                                      |
+| action             | ✅ Android<br/>✅ iOS | Click operation symbol.                                                                        |
+| shortcutShortLabel | ✅ Android<br/>✅ iOS | Title for a shortcut.                                                                          |
+| shortcutLongLabel  | ✅ Android<br/>✅ iOS | Subtitle for a shortcut.                                                                       |
+| icon               | ✅ Android<br/>✅ iOS | Custom Icons.<sup>\*</sup>                                                                     |
+| iconType           | ✅ iOS                | icons which have been provided by Apple.                                                       |
+| iconIsBase64       | ✅ Android            | (Optional) Boolean. Flag that indicates if the icon is base64 String or not. False by default. |
+
+> \*: Custom Icons on iOS platform can be used to provide your own icon. It must be a valid name of an icon template in your Assets catalog.
+
+### Remove all dynamic shortcuts
+
+```javascript
+Shortcuts.removeAllDynamicShortcuts(
+  function (response) {
+    console.log(response);
+  },
+  function (error) {
+    console.log(error);
+  }
+);
+```
+
+- Android platform will remove all dynamic shortcuts, but the static shortcuts will not be affected.
+- IOS platform will remove all shortcuts, the static shortcuts are included.
+
+### isAvailable
+
+**iOS only**
+
+You need an iPhone 6S or some future tech to use the features of this plugin, so you can check at runtime if the user's device is supported.
+
+```javascript
+Shortcuts.isAvailable(function (avail) {
+  console.log(avail);
+});
+```
+
+### watchForceTouches
+
+**iOS only**
+
+You can get a notification when the user force touches the webview. The plugin defines a Force Touch when at least 75% of the maximum force is applied to the screen. Your app will receive the x and y coordinates, so you have to figure out which UI element was touched.
+
+Useful for context menu's, zooming in on images, whatnot.
+
+```javascript
+Shortcuts.watchForceTouches(function (result) {
+  console.log("force touch % " + result.force); // 84
+  console.log("force touch timestamp " + result.timestamp); // 1449908744.706419
+  console.log("force touch x coordinate " + result.x); // 213
+  console.log("force touch y coordinate " + result.y); // 41
+});
+```
+
+You can also track in JS which was the last element that received an ontouchstart event, remember the timestamp when that happened and correlate that to the timestamp of the force touch. If those are very close to each other you can safely assume the force touch was on that element.
+
+### enableLinkPreview
+
+**iOS only**
+
+UIWebView and WKWebView (the webviews powering Cordova apps) don't allow the fancy new link preview feature of iOS9. If you have a 3D Touch enabled device though, you sometimes are allowed to force press a link and a page preview pops up. If you want to enable this feature, do:
+
+```javascript
+Shortcuts.disableLinkPreview();
+```
+
+### disableLinkPreview
+
+**iOS only**
+
+To disable the link preview feature again, do:
+
+```javascript
+Shortcuts.disableLinkPreview();
+```

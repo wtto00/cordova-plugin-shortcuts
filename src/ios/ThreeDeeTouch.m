@@ -52,17 +52,18 @@
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
-- (void) configureQuickActions:(CDVInvokedUrlCommand *)command {
-    NSDictionary *actions = [command.arguments objectAtIndex:0];
-    
-    NSMutableArray *items = [[NSMutableArray alloc] init];
-    
-    for (NSDictionary *action in actions) {
-        NSString *type = [action objectForKey:@"type"];
-        NSString *title = [action objectForKey:@"title"];
-        NSString *subtitle = [action objectForKey:@"subtitle"];
+- (void) createDynamicShortcut:(CDVInvokedUrlCommand *)command {
+    NSDictionary *action = [command.arguments objectAtIndex:0];
+
+    if ([UIApplication sharedApplication].shortcutItems.count >= 4) {
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"You can not create more than 4 shortcuts"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    } else {
+        NSString *type = [action objectForKey:@"action"];
+        NSString *title = [action objectForKey:@"shortLabel"];
+        NSString *subtitle = [action objectForKey:@"longLabel"];
         NSString *iconType = [action objectForKey:@"iconType"];
-        NSString *iconTemplate = [action objectForKey:@"iconTemplate"];
+        NSString *iconTemplate = [action objectForKey:@"icon"];
         
         UIApplicationShortcutIcon *icon = nil;
         if (iconType != nil) {
@@ -71,8 +72,17 @@
             icon = [UIApplicationShortcutIcon iconWithTemplateImageName:iconTemplate];
         }
         
-        [items addObject:[[UIApplicationShortcutItem alloc]initWithType: type localizedTitle: title localizedSubtitle: subtitle icon: icon userInfo: nil]];
+        UIApplicationShortcutItem *shortcutItem = [[UIApplicationShortcutItem alloc]initWithType: type localizedTitle: title localizedSubtitle: subtitle icon: icon userInfo: nil];
+        NSMutableArray *shortcutItems = [NSMutableArray arrayWithArray:[UIApplication sharedApplication].shortcutItems];
+        [shortcutItems addObject:shortcutItem];
+        [[UIApplication sharedApplication] setShortcutItems:shortcutItems];
+
+        [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
     }
+}
+
+- (void) removeAllDynamicShortcuts:(CDVInvokedUrlCommand *)command {
+    NSMutableArray *items = [[NSMutableArray alloc] init];
     
     [UIApplication sharedApplication].shortcutItems = items;
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
