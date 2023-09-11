@@ -76,6 +76,21 @@ declare namespace CordovaPluginShortcuts {
    * Get dynamic shortcuts.
    * @param onSuccess success callback
    * @param onError fail callback
+   * @example
+   * ```javascript
+   * Shortcuts.getDynamicShortcuts(
+   *   (data) => {
+   *     data.forEach((item) => {
+   *       console.log(
+   *         `Get dynamic shortcut: id: ${item.id}, action: ${item.action}, shortLabel: ${item.shortLabel}, longLabel: ${item.longLabel}, disabledMessage: ${item.disabledMessage}`
+   *       );
+   *     });
+   *   },
+   *   (err) => {
+   *     console.log("getDynamicShortcuts error:", err);
+   *   }
+   * );
+   * ```
    */
   function getDynamicShortcuts(onSuccess: (data: DynamicShortcuts[]) => void, onError?: (err: string) => void): void;
 
@@ -84,8 +99,35 @@ declare namespace CordovaPluginShortcuts {
    * @param shortcuts the dynamic shortcut to be set.
    * @param onSuccess success callback
    * @param onError fail callback
+   * @example
+   * ```javascript
+   * const shortcuts = [
+   *   {
+   *     id: "id_1",
+   *     shortLabel: "short label 1",
+   *     action: "action_1",
+   *     icon: "icon_in_android_drawable_or_ios_assets",
+   *   },
+   *   {
+   *     id: "id_2",
+   *     shortLabel: "short label 2",
+   *     action: "action_2",
+   *     icon: "icon_android_base64",
+   *     iconIsBase64: true,
+   *   },
+   *   {
+   *     id: "id_3",
+   *     shortLabel: "short label 3",
+   *     action: "action_3",
+   *     iconType: "ios_apple_icon",
+   *   },
+   * ];
+   * Shortcuts.setDynamicShortcuts(shortcuts, () => {
+   *   console.log("setDynamicShortcuts.ok");
+   * });
+   * ```
    */
-  function setDynamicShortcuts(shortcuts: Shortcut[], onSuccess: () => void, onError?: (err: string) => void): void;
+  function setDynamicShortcuts(shortcuts: Shortcut[], onSuccess?: () => void, onError?: (err: string) => void): void;
 
   interface HomeIconPressedItem {
     /** Click operation symbol. */
