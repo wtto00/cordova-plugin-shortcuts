@@ -250,8 +250,7 @@ Shortcuts.setDynamicShortcuts(shortcuts, () => {
 
 ### isAvailable
 
-**仅支持 iOS**
-
+**仅支持 iOS**  
 您需要一部 iPhone 6S 或类似的未来技术来使用此插件的功能，因此您可以在运行时检查用户的设备是否受支持。
 
 ```javascript
@@ -262,8 +261,7 @@ Shortcuts.isAvailable(function (avail) {
 
 ### 监听用户长按
 
-**仅支持 iOS**
-
+**仅支持 iOS**  
 当用户对 webview 进行强制触摸时，您可以收到通知。插件定义了当至少 75%的最大力量被应用到屏幕上时，才会出现 Force Touch。您的应用程序将收到 x 和 y 坐标，因此您需要弄清楚被触摸的 UI 元素是哪一个。
 
 对于上下文菜单、放大图像等等，非常有用。
@@ -281,8 +279,7 @@ Shortcuts.watchForceTouches(function (result) {
 
 ### 启用链接预览
 
-**仅支持 iOS**
-
+**仅支持 iOS**  
 UIWebView 和 WKWebView（用于 Cordova 应用的 Web 视图）不支持 iOS9 的新链接预览功能。但是，如果你有一台支持 3D Touch 的设备，有时你可以强按一个链接，然后弹出一个页面预览。如果你想启用这个功能，请执行以下操作：
 
 ```javascript
@@ -291,8 +288,7 @@ Shortcuts.disableLinkPreview();
 
 ### 禁用链接预览
 
-**仅支持 iOS**
-
+**仅支持 iOS**  
 禁用链接预览，请执行以下操作：
 
 ```javascript
