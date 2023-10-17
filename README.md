@@ -18,7 +18,7 @@ References:
 ## Install
 
 ```shell
-cordova plugin add https://github.com/wtto00/cordova-plugin-shortcuts.git
+cordova plugin add cordova-plugin-shortcuts
 ```
 
 ## Uninstall
