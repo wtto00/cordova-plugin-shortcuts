@@ -1,10 +1,5 @@
 # cordova-plugin-shortcuts
 
-如果这个项目帮到你了，请我喝瓶可乐吧。
-
-<a href="https://www.buymeacoffee.com/wtto00" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;max-width: 217px !important;" ></a>
-<a href="https://afdian.net/a/wtto00" target="_blank"><img style="height: 60px !important;max-width: 217px !important;" src="https://pic1.afdiancdn.com/static/img/welcome/button-sponsorme.jpg" alt="sponsorme"></a >
-
 [English](./README.md) | 中文简体
 
 引用借鉴:
@@ -13,6 +8,7 @@
 - iOS: [EddyVerbruggen/cordova-plugin-3dtouch](https://github.com/EddyVerbruggen/cordova-plugin-3dtouch)
 - [安卓官方文档](https://developer.android.com/develop/ui/views/launch/shortcuts)
 - [iOS 官方文档](https://developer.apple.com/documentation/uikit/menus_and_shortcuts/add_home_screen_quick_actions)
+- [安卓快捷方式图标设计规范](https://commondatastorage.googleapis.com/androiddevelopers/shareables/design/app-shortcuts-design-guidelines.pdf)
 
 ## 支持的平台
 
